@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "david.locu",
+  "name": "Locu Focus",
+  "version": "1.0.0",
+  "author": "davidsmorais",
+  "description": "Start Locu work sessions from the Omarchy bar.",
+  "kinds": ["service", "bar-widget", "panel"],
+  "activation": "on-demand",
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml",
+    "panel": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Locu Focus",
+    "description": "Focus timer and today's Locu tasks",
+    "category": "Productivity",
+    "aliases": ["locu", "focus", "pomodoro", "timer"],
+    "allowMultiple": false,
+    "defaultSection": "center",
+    "defaults": {
+      "apiToken": "",
+      "sessionMinutes": 25,
+      "playSound": true,
+      "desktopAnimation": true
+    },
+    "schema": [
+      {"key":"apiToken","type":"password","label":"Locu API key","description":"Personal Access Token for api.locu.app.","defaultValue":""},
+      {"key":"sessionMinutes","type":"integer","label":"Session length (minutes)","min":1,"max":180,"step":1,"defaultValue":25},
+      {"key":"playSound","type":"boolean","label":"Play sound when session ends","defaultValue":true},
+      {"key":"desktopAnimation","type":"boolean","label":"Show desktop animation when session ends","defaultValue":true}
+    ]
+  }
+}
