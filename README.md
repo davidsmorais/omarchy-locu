@@ -4,6 +4,8 @@ Focus sessions for Locu from the Omarchy bar. Click the bar widget to open the T
 
 ![Locu Focus screenshot](screenshot.png)
 
+![Locu Focus session](session screenshot.png)
+
 ## Installation
 
 ```bash
