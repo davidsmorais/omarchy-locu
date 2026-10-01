@@ -20,6 +20,8 @@ Item {
   property var endedTask: null
   property string pendingAction: ""
 
+  readonly property int maxResponseBytes: 1048576
+  function plain(s, max) { return String(s === undefined || s === null ? "" : s).replace(/[\u0000-\u001f\u007f]/g," ").replace(/</g,"\u2039").replace(/>/g,"\u203a").replace(/&/g,"\uff06").slice(0, max || 200) }
   function urlQuote(s) { return '"' + String(s).replace(/\\/g,"\\\\").replace(/"/g,'\\"').replace(/\n/g,"\\n") + '"' }
   function api(method, path, body, callback) {
     var conf = "url = " + urlQuote(baseUrl + path) + "\nrequest = " + urlQuote(method) +
@@ -40,7 +42,7 @@ Item {
       var out = []
       for (var i=0; i<rows.length; i++) {
         var t = rows[i].task || {}
-        if (!t.done && rows[i].section === "today") out.push({id:rows[i].taskId || t.id, name:t.name || "Untitled task"})
+        if (!t.done && rows[i].section === "today") out.push({id:rows[i].taskId || t.id, name:plain(t.name, 200) || "Untitled task"})
       }
       tasks = out
     })
@@ -128,15 +130,17 @@ Item {
       property string config: ""
       property var callback: null
       stdinEnabled:true
-      command:["curl","--silent","--show-error","--proto","=https","--max-redirs","0","--connect-timeout","8","--max-time","20","--config","-"]
+      // head -c bounds bytes read from curl before they reach QML; --max-filesize only covers responses that declare a length
+      command:["sh","-c","curl --silent --show-error --proto =https --max-redirs 0 --connect-timeout 8 --max-time 20 --max-filesize " + root.maxResponseBytes + " --config - | head -c " + (root.maxResponseBytes + 1)]
       stdout:StdioCollector { id: output }
       stderr:StdioCollector { id: errors }
       onStarted:{ write(config); config=""; stdinEnabled=false }
       onExited:function(code) {
         var raw=output.text || "", marker="\n__HTTP__:", i=raw.lastIndexOf(marker), status=i<0?0:parseInt(raw.slice(i+marker.length),10), body=i<0?raw:raw.slice(0,i), data=null, cb=callback
+        if (raw.length > root.maxResponseBytes) { cb(false,null,"Locu API response too large"); destroy(); return }
         try { data=body ? JSON.parse(body) : null } catch(e) {}
         if (status>=200 && status<300) cb(true,data,"")
-        else cb(false,data,(data && (data.message || data.error)) || (status ? "Locu API error " + status : "Could not reach Locu API"))
+        else cb(false,data,(data && plain(data.message || data.error, 200)) || (status ? "Locu API error " + status : "Could not reach Locu API"))
         destroy()
       }
     }

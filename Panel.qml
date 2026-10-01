@@ -74,8 +74,8 @@ Item {
           color:root.fg; font.family:"JetBrainsMono Nerd Font"; font.pixelSize:32; font.bold:true
         }
         Text { visible:root.service && root.service.timerState === "PAUSED"; Layout.fillWidth:true; horizontalAlignment:Text.AlignHCenter; text:"Paused — timer frozen"; color:Color.muted }
-        Text { Layout.fillWidth:true; horizontalAlignment:Text.AlignHCenter; text:root.service && root.service.activeTask ? root.service.activeTask.name : "Choose a task from Today"; color:Color.muted; elide:Text.ElideRight }
-        Text { visible:root.service && root.service.error!==""; Layout.fillWidth:true; text:root.service ? root.service.error : ""; color:"#ff6b6b"; wrapMode:Text.Wrap }
+        Text { Layout.fillWidth:true; horizontalAlignment:Text.AlignHCenter; text:root.service && root.service.activeTask ? root.service.activeTask.name : "Choose a task from Today"; color:Color.muted; elide:Text.ElideRight; textFormat:Text.PlainText }
+        Text { visible:root.service && root.service.error!==""; Layout.fillWidth:true; text:root.service ? root.service.error : ""; color:"#ff6b6b"; wrapMode:Text.Wrap; textFormat:Text.PlainText }
         Text { text:"TODAY"; color:Color.muted; font.pixelSize:Style.font.caption; font.bold:true }
         ListView {
           Layout.fillWidth:true; Layout.fillHeight:true; Layout.preferredHeight:Math.min(contentHeight,240); Layout.maximumHeight:240; clip:true; model:root.service ? root.service.tasks : []
